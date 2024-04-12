@@ -87,9 +87,16 @@ class Enemy(PhysicsEntity):
                 self.game.sparks.append(Spark(self.rect().center, math.pi, 5 + random.random()))
                 return True  """
 
-        if self.game.player.last_slash in {20, 16}:
+        if self.game.player.last_slash in {20, 14}:
             enemy_rect = self.rect()
             for point in self.game.player.slash_points:
+                if enemy_rect.collidepoint(*point):
+                    self.die()
+                    return True
+
+        if self.game.player.last_stab in {50, 37}:
+            enemy_rect = self.rect()
+            for point in self.game.player.stab_points:
                 if enemy_rect.collidepoint(*point):
                     self.die()
                     return True

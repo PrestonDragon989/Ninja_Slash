@@ -21,11 +21,10 @@ class Player(PhysicsEntity):
         self.last_slash = 0
         self.slash_points = []
 
-        # Getting HP and Defense
-        self.max_health = 100
-        self.health = self.max_health
-        self.health_bar_color_phase = 0
-        self.defense = 10  # Attack Formula = attack * (100/ (100 + defense))
+        self.stab_position = self.pos
+        self.last_stab = 0
+        self.stab_points = []
+        self.stab_direction = 1
 
     def safe_blocks_below(self, tilemap):
         # Getting Points inbetween
@@ -47,7 +46,7 @@ class Player(PhysicsEntity):
         return False
 
     def update(self, tilemap, movement=(0, 0)):
-        movement = [movement[0] * 1.4, movement[1] * 1.4]
+        movement = [movement[0] * 1.2, movement[1] * 1.4]
 
         super().update(tilemap, movement=movement)
 
@@ -108,12 +107,12 @@ class Player(PhysicsEntity):
             self.velocity[0] = min(self.velocity[0] + 0.1, 0)
 
         self.last_slash = max(0, self.last_slash - 1)
-        if self.last_slash <= 16 and self.slash_points:
+        if self.last_slash <= 12 and self.slash_points:
             self.slash_points.clear()
 
-    def render(self, surf, offset=(0, 0)):
-        if abs(self.dashing) <= 50:
-            super().render(surf, offset=offset)
+        self.last_stab = max(0, self.last_stab - 1)
+        if self.last_stab <= 7 and self.stab_points:
+            self.stab_points.clear()
 
     def jump(self):
         if self.wall_slide:
@@ -148,10 +147,10 @@ class Player(PhysicsEntity):
 
             self.slash_points.clear()
             starting_point = self.rect().center
-            for i in range(-10, 10):
+            for i in range(-6, 6):
                 # Getting Point and new Direction (Degrees & Radians)
                 point = [0, 0]
-                new_direction = (direction_degrees + (i * 4.2)) % 360
+                new_direction = (direction_degrees + (i * 5.4)) % 360
                 direction_radians = math.radians(new_direction)
 
                 # Finding New points based on 26 away
@@ -201,12 +200,35 @@ class Player(PhysicsEntity):
                 # Adding to new list, & Creating Particles
                 self.slash_points.append(point)
 
-            self.last_slash += 20
+            self.last_slash += 17
 
-    def render_health(self, surf):
-        surf.blit(self.game.assets['player/background_health'][0], (3, 3))
-        if self.health > 0:
-            self.game.assets['player/foreground_health'].update()
-            current_hp_image = self.game.assets['player/foreground_health'].img().copy()
-            surf.blit(pygame.transform.scale(current_hp_image, (
-                current_hp_image.get_width() * (self.health / self.max_health), current_hp_image.get_height())), (7, 7))
+    def stab(self, tilemap, mouse_pos):
+        if not self.last_stab:
+            stab_direction = math.degrees(
+                math.atan2(mouse_pos[1] - (self.pos[1] + 10), mouse_pos[0] - (self.pos[0] + 7))) % 360
+            self.slash_points.clear()
+            self.last_stab += 50
+            stab_position = self.rect().center
+
+            for i in range(15):
+                # Getting Point and new Direction (Degrees & Radians)
+                point = [0, 0]
+                direction_radians = math.radians(stab_direction)
+                stab_distance = 5 + i * 3
+
+                # Finding New points based on 26 away
+                point[0] = stab_position[0] + stab_distance * math.cos(direction_radians)
+                point[1] = stab_position[1] + stab_distance * math.sin(direction_radians)
+
+                # Adding to new list, & Creating Particles
+                self.stab_points.append(point)
+                if not tilemap.solid_check(point):
+                    self.game.particles.append(
+                        Particle(self.game, 'particle', point, velocity=(0, 0),
+                                 frame=random.randint(0, 7), change_length=13))
+
+                self.stab_points.append(point)
+
+    def render(self, surf, offset=(0, 0)):
+        if abs(self.dashing) <= 50:
+            super().render(surf, offset=offset)

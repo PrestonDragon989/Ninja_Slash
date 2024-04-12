@@ -1,11 +1,12 @@
 class Particle:
-    def __init__(self, game, p_type, pos, velocity=(0, 0), frame=0):
+    def __init__(self, game, p_type, pos, velocity=(0, 0), frame=0, change_length=False):
         self.game = game
         self.type = p_type
         self.pos = list(pos)
         self.velocity = velocity
         self.animation = self.game.assets['particle/' + p_type].copy()
         self.animation.frame = frame
+        self.animation.img_duration = self.animation.img_duration if not change_length else change_length
 
     def update(self):
         kill = False

@@ -17,8 +17,10 @@ class Game:
     def __init__(self):
         pygame.init()
 
+        self.screen_scale = 4
+
         pygame.display.set_caption("Samurai Game")
-        self.screen = pygame.display.set_mode((1600, 1200))
+        self.screen = pygame.display.set_mode((320 * self.screen_scale, 240 * self.screen_scale))
         self.display = pygame.Surface((320, 240))
 
         self.clock = pygame.time.Clock()
@@ -35,8 +37,6 @@ class Game:
             'player/jump': Animation(load_spritesheet('entities/player/jump.png', (13, 17), (18, 18), 1)),
             'player/slide': Animation(load_spritesheet('entities/player/slide.png', (13, 17), (18, 18), 1)),
             'player/wall_slide': Animation(load_spritesheet('entities/player/wall_slide.png', (13, 17), (18, 18), 1)),
-            'player/background_health': load_spritesheet('entities/player/background_health.png', (96, 19), (96, 96), 1),
-            'player/foreground_health': Animation(load_spritesheet('entities/player/foreground_health.png', (88, 12), (88, 88), 20), img_dur=15),
             'particle/leaf': Animation(load_images('particles/leaf'), img_dur=20, loop=False),  # Particles
             'particle/particle': Animation(load_images('particles/particle'), img_dur=6, loop=False),
             'enemy/idle': Animation(load_images('entities/enemy/idle'), img_dur=6),
@@ -139,7 +139,7 @@ class Game:
                     if self.player.rect().collidepoint(projectile[0]):
                         self.projectiles.remove(projectile)
                         self.dead += 1
-                        self.screenshake = max(16, self.screenshake)
+                        self.screenshake = max(35, self.screenshake + 35)
                         for i in range(30):
                             angle = random.random() * math.pi * 2
                             speed = random.random() * 5
@@ -181,8 +181,6 @@ class Game:
                 if kill:
                     self.sparks.remove(spark)
 
-            self.player.render_health(self.display)
-
             for event in pygame.event.get():
                 # Quiting game if window is closed
                 if event.type == pygame.QUIT:
@@ -201,8 +199,13 @@ class Game:
                         self.player.dash()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
-                        mouse_to_player = ((pygame.mouse.get_pos()[0] / 5) + self.scroll[0], (pygame.mouse.get_pos()[1] / 5) + self.scroll[1])
+                        mouse_to_player = ((pygame.mouse.get_pos()[0] / self.screen_scale) + self.scroll[0],
+                                           (pygame.mouse.get_pos()[1] / self.screen_scale) + self.scroll[1])
                         self.player.slash(self.tilemap, mouse_to_player)
+                    if event.button == 3:
+                        mouse_to_player = ((pygame.mouse.get_pos()[0] / self.screen_scale) + self.scroll[0],
+                                           (pygame.mouse.get_pos()[1] / self.screen_scale) + self.scroll[1])
+                        self.player.stab(self.tilemap, mouse_to_player)
 
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_a:
