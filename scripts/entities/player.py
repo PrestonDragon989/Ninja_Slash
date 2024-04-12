@@ -164,7 +164,7 @@ class Player(PhysicsEntity):
                     self.game.particles.append(
                         Particle(self.game, 'particle', point, velocity=(0, 0), frame=random.randint(0, 7)))
 
-            for i in range(-5, 5):
+            for i in range(-3, 3):
                 # Getting Point and new Direction (Degrees & Radians)
                 point = [0, 0]
                 new_direction = (direction_degrees + (i * 4.2)) % 360
@@ -176,7 +176,19 @@ class Player(PhysicsEntity):
 
                 # Adding to new list, & Creating Particles
                 self.slash_points.append(point)
-            for i in range(-5, 5):
+            for i in range(-4, 4):
+                # Getting Point and new Direction (Degrees & Radians)
+                point = [0, 0]
+                new_direction = (direction_degrees + (i * 4.2)) % 360
+                direction_radians = math.radians(new_direction)
+
+                # Finding New points based on 26 away
+                point[0] = starting_point[0] + 17 * math.cos(direction_radians)
+                point[1] = starting_point[1] + 17 * math.sin(direction_radians)
+
+                # Adding to new list, & Creating Particles
+                self.slash_points.append(point)
+            for i in range(-2, 2):
                 # Getting Point and new Direction (Degrees & Radians)
                 point = [0, 0]
                 new_direction = (direction_degrees + (i * 4.2)) % 360
@@ -189,7 +201,7 @@ class Player(PhysicsEntity):
                 # Adding to new list, & Creating Particles
                 self.slash_points.append(point)
 
-            self.last_slash = 20
+            self.last_slash += 20
 
     def render_health(self, surf):
         surf.blit(self.game.assets['player/background_health'][0], (3, 3))
