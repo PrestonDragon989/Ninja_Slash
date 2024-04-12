@@ -70,10 +70,9 @@ class Enemy(PhysicsEntity):
             self.set_action('idle')
 
         if random.randint(1, 4500) == 1:
-            print("rando shot")
             self.shoot()
 
-        if abs(self.game.player.dashing) >= 50:
+        """  if abs(self.game.player.dashing) >= 50:
             if self.rect().colliderect(self.game.player.rect()):
                 self.game.screenshake = max(17, self.game.screenshake + 1)
                 for i in range(30):
@@ -86,7 +85,28 @@ class Enemy(PhysicsEntity):
                                                         frame=random.randint(0, 7)))
                 self.game.sparks.append(Spark(self.rect().center, 0, 5 + random.random()))
                 self.game.sparks.append(Spark(self.rect().center, math.pi, 5 + random.random()))
-                return True
+                return True  """
+
+        if self.game.player.last_slash in {20, 16}:
+            enemy_rect = self.rect()
+            for point in self.game.player.slash_points:
+                if enemy_rect.collidepoint(*point):
+                    self.die()
+                    return True
+
+    def die(self):
+        enemy_rect = self.rect()
+        self.game.screenshake = max(17, self.game.screenshake + 1)
+        for i in range(30):
+            angle = random.random() * math.pi * 2
+            speed = random.random() * 5
+            self.game.sparks.append(Spark(enemy_rect.center, angle, 2 + random.random()))
+            self.game.particles.append(Particle(self.game, 'particle', enemy_rect.center,
+                                                velocity=[math.cos(angle + math.pi) * speed * 0.5,
+                                                          math.sin(angle + math.pi) * speed * 0.5],
+                                                frame=random.randint(0, 7)))
+        self.game.sparks.append(Spark(self.rect().center, 0, 5 + random.random()))
+        self.game.sparks.append(Spark(self.rect().center, math.pi, 5 + random.random()))
 
     def shoot(self):
         dis = (self.game.player.pos[0] - self.pos[0], self.game.player.pos[1] - self.pos[1])

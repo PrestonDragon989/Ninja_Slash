@@ -198,6 +198,10 @@ class Game:
                         self.player.jump()
                     if event.key == pygame.K_SPACE or event.key == pygame.K_LSHIFT:
                         self.player.dash()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        mouse_to_player = ((pygame.mouse.get_pos()[0] / 5) + self.scroll[0], (pygame.mouse.get_pos()[1] / 5) + self.scroll[1])
+                        self.player.slash(self.tilemap, mouse_to_player)
 
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_a:

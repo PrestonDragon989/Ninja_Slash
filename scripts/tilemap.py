@@ -90,6 +90,25 @@ class Tilemap:
             if self.tilemap[tile_loc]['type'] in PHYSICS_TILES:
                 return self.tilemap[tile_loc]
 
+    def can_see_point(self, pointA, pointB):
+        # Getting Points inbetween
+        x1, y1 = pointA
+        x2, y2 = pointB
+        distance = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+        total_time = distance / 15
+        ratio = 15 / distance
+        points = []
+        for t in range(int(total_time) + 1):
+            x = x1 + (x2 - x1) * ratio * t
+            y = y1 + (y2 - y1) * ratio * t
+            points.append((x, y))
+
+        # Checking for blocks
+        for point in points:
+            if self.solid_check(point):
+                return False
+        return True
+
     def physics_rects_around(self, pos):
         rects = []
         for tile in self.tiles_around(pos):
