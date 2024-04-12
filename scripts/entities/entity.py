@@ -10,12 +10,14 @@ class PhysicsEntity:
         self.velocity = [0, 0]
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
 
-        self.action = ''
+        self.action = 'idle'
         self.anim_offset = (-3, -2)
         self.flip = False
         self.set_action('idle')
 
         self.last_movement = [0, 0]
+
+        self.animation = self.game.assets[self.type + "/" + self.action].copy()
 
     def rect(self):
         return pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])

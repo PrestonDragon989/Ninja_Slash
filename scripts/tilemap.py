@@ -71,18 +71,22 @@ class Tilemap:
 
     def save(self, path):
         f = open(path, 'w')
-        json.dump({'tilemap': self.tilemap, 'tile_size': self.tile_size, 'offgrid': self.offgrid_tiles, 'background': self.background}, f)
+        json.dump({'tilemap': self.tilemap, 'tile_size': self.tile_size, 'offgrid': self.offgrid_tiles,
+                   'background': self.background}, f)
         f.close()
 
     def load(self, path):
-        f = open(path, 'r')
-        map_data = json.load(f)
-        f.close()
+        try:
+            f = open(path, 'r')
+            map_data = json.load(f)
+            f.close()
 
-        self.tilemap = map_data['tilemap']
-        self.tile_size = map_data['tile_size']
-        self.offgrid_tiles = map_data['offgrid']
-        self.background = map_data['background']
+            self.tilemap = map_data['tilemap']
+            self.tile_size = map_data['tile_size']
+            self.offgrid_tiles = map_data['offgrid']
+            self.background = map_data['background']
+        except TypeError or FileNotFoundError:
+            pass
 
     def solid_check(self, pos):
         tile_loc = str(int(pos[0] // self.tile_size)) + ';' + str(int(pos[1] // self.tile_size))
@@ -90,10 +94,10 @@ class Tilemap:
             if self.tilemap[tile_loc]['type'] in PHYSICS_TILES:
                 return self.tilemap[tile_loc]
 
-    def can_see_point(self, pointA, pointB):
+    def can_see_point(self, point_a, point_b):
         # Getting Points inbetween
-        x1, y1 = pointA
-        x2, y2 = pointB
+        x1, y1 = point_a
+        x2, y2 = point_b
         distance = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
         total_time = distance / 15
         ratio = 15 / distance

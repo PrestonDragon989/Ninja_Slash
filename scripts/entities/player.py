@@ -107,7 +107,7 @@ class Player(PhysicsEntity):
             self.velocity[0] = min(self.velocity[0] + 0.1, 0)
 
         self.last_slash = max(0, self.last_slash - 1)
-        if self.last_slash <= 12 and self.slash_points:
+        if self.last_slash <= 14 and self.slash_points:
             self.slash_points.clear()
 
         self.last_stab = max(0, self.last_stab - 1)
@@ -202,7 +202,7 @@ class Player(PhysicsEntity):
                 # Adding to new list, & Creating Particles
                 self.slash_points.append(point)
 
-            self.last_slash += 17
+            self.last_slash += 14
 
     def stab(self, tilemap, mouse_pos):
         if not self.last_stab:
@@ -229,6 +229,24 @@ class Player(PhysicsEntity):
                         Particle(self.game, 'particle', point, velocity=(0, 0),
                                  frame=random.randint(0, 7), change_length=13))
                     self.stab_points.append(point)
+
+    def reset(self):
+        # Getting Movement / Action Vars
+        self.air_time = 0
+        self.jumps = 1
+        self.wall_slide = False
+        self.time_since_wall_slide = 0
+        self.dashing = 0
+
+        self.last_slash = 0
+        self.slash_points = []
+
+        self.stab_position = self.pos
+        self.last_stab = 0
+        self.stab_points = []
+        self.stab_direction = 1
+
+        self.velocity = [0, 0]
 
     def render(self, surf, offset=(0, 0)):
         if abs(self.dashing) <= 50:

@@ -13,7 +13,8 @@ RENDER_SCALE = 4.0  # USED TO BE 2.0
 
 class Editor:
     def __init__(self):
-        self.file = filedialog.asksaveasfilename(initialdir='data/maps', title="Select JSON Map", confirmoverwrite=False)
+        self.file = filedialog.asksaveasfilename(initialdir='data/maps',
+                                                 title="Select JSON Map", confirmoverwrite=False)
         print(f"Opened file: {self.file}")
 
         pygame.init()
@@ -33,12 +34,18 @@ class Editor:
         }
         # Adding the rest of the spawners
         self.assets['spawners'][1] = self.assets['spawners'][1].subsurface(pygame.Rect(3, 2, 9, 16))
-        self.assets['spawners'].append(load_spritesheet('entities/enemies/red/idle.png', (18, 18), (18, 18), 1)[0].subsurface(pygame.Rect(3, 2, 9, 16)))
-        self.assets['spawners'].append(load_spritesheet('entities/enemies/orange/idle.png', (18, 18), (18, 18), 1)[0].subsurface(pygame.Rect(3, 2, 9, 16)))
-        self.assets['spawners'].append(load_spritesheet('entities/enemies/yellow/idle.png', (18, 18), (18, 18), 1)[0].subsurface(pygame.Rect(3, 2, 9, 16)))
-        self.assets['spawners'].append(load_spritesheet('entities/enemies/green/idle.png', (18, 18), (18, 18), 1)[0].subsurface(pygame.Rect(3, 2, 9, 16)))
-        self.assets['spawners'].append(load_spritesheet('entities/enemies/blue/idle.png', (18, 18), (18, 18), 1)[0].subsurface(pygame.Rect(3, 2, 9, 16)))
-        self.assets['spawners'].append(load_spritesheet('entities/enemies/purple/idle.png', (18, 18), (18, 18), 1)[0].subsurface(pygame.Rect(3, 2, 9, 16)))
+        self.assets['spawners'].append(load_spritesheet('entities/enemies/red/idle.png', (18, 18), (18, 18), 1)[0]
+                                       .subsurface(pygame.Rect(3, 2, 9, 16)))
+        self.assets['spawners'].append(load_spritesheet('entities/enemies/orange/idle.png', (18, 18), (18, 18), 1)[0]
+                                       .subsurface(pygame.Rect(3, 2, 9, 16)))
+        self.assets['spawners'].append(load_spritesheet('entities/enemies/yellow/idle.png', (18, 18), (18, 18), 1)[0]
+                                       .subsurface(pygame.Rect(3, 2, 9, 16)))
+        self.assets['spawners'].append(load_spritesheet('entities/enemies/green/idle.png', (18, 18), (18, 18), 1)[0]
+                                       .subsurface(pygame.Rect(3, 2, 9, 16)))
+        self.assets['spawners'].append(load_spritesheet('entities/enemies/blue/idle.png', (18, 18), (18, 18), 1)[0]
+                                       .subsurface(pygame.Rect(3, 2, 9, 16)))
+        self.assets['spawners'].append(load_spritesheet('entities/enemies/purple/idle.png', (18, 18), (18, 18), 1)[0]
+                                       .subsurface(pygame.Rect(3, 2, 9, 16)))
 
         self.movement = [False, False, False, False]
 
@@ -59,16 +66,18 @@ class Editor:
         self.ongrid = True
 
     def run(self):
-
-        if not os.path.exists(self.file):
-            with open(self.file, 'w') as file:
-                file.write("{\n\n}")
-                print("new file")
-                file.close()
+        try:
+            if not os.path.exists(self.file):
+                with open(self.file, 'w') as file:
+                    file.write("{\n\n}")
+                    print("new file")
+                    file.close()
+        except TypeError:
+            pass
 
         try:
             self.tilemap.load(self.file)
-        except Exception as e:
+        except FileNotFoundError or TypeError:
             pass
 
         while True:
@@ -85,22 +94,26 @@ class Editor:
 
             mpos = pygame.mouse.get_pos()
             mpos = (mpos[0] / RENDER_SCALE, mpos[1] / RENDER_SCALE)
-            tile_pos = (int((mpos[0] + self.scroll[0]) // self.tilemap.tile_size), int((mpos[1] + self.scroll[1]) // self.tilemap.tile_size))
+            tile_pos = (int((mpos[0] + self.scroll[0]) // self.tilemap.tile_size),
+                        int((mpos[1] + self.scroll[1]) // self.tilemap.tile_size))
 
             if self.ongrid:
-                self.display.blit(current_tile_image, (tile_pos[0] * self.tilemap.tile_size - self.scroll[0], tile_pos[1] * self.tilemap.tile_size - self.scroll[1]))
+                self.display.blit(current_tile_image, (tile_pos[0] * self.tilemap.tile_size - self.scroll[0],
+                                                       tile_pos[1] * self.tilemap.tile_size - self.scroll[1]))
             else:
                 self.display.blit(current_tile_image, mpos)
 
             if self.clicking and self.ongrid:
-                self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1])] = {'type': self.tile_list[self.tile_group], 'variant': self.tile_variant, 'pos': tile_pos}
+                self.tilemap.tilemap[str(tile_pos[0]) + ';' + str(tile_pos[1])] = \
+                    {'type': self.tile_list[self.tile_group], 'variant': self.tile_variant, 'pos': tile_pos}
             if self.right_clicking:
                 tile_loc = str(tile_pos[0]) + ';' + str(tile_pos[1])
                 if tile_loc in self.tilemap.tilemap:
                     del self.tilemap.tilemap[tile_loc]
                 for tile in self.tilemap.offgrid_tiles.copy():
                     tile_img = self.assets[tile['type']][tile['variant']]
-                    tile_r = pygame.Rect(tile['pos'][0] - self.scroll[0], tile['pos'][1] - self.scroll[1], tile_img.get_width(), tile_img.get_height())
+                    tile_r = pygame.Rect(tile['pos'][0] - self.scroll[0], tile['pos'][1] - self.scroll[1],
+                                         tile_img.get_width(), tile_img.get_height())
                     if tile_r.collidepoint(mpos):
                         self.tilemap.offgrid_tiles.remove(tile)
 
@@ -115,14 +128,20 @@ class Editor:
                     if event.button == 1:
                         self.clicking = True
                         if not self.ongrid:
-                            self.tilemap.offgrid_tiles.append({'type': self.tile_list[self.tile_group], 'variant': self.tile_variant, 'pos': (mpos[0] + self.scroll[0], mpos[1] + self.scroll[1])})
+                            self.tilemap.offgrid_tiles.append({'type': self.tile_list[self.tile_group],
+                                                               'variant': self.tile_variant, 'pos': (mpos[0]
+                                                                                                     + self.scroll[0],
+                                                                                                     mpos[1] +
+                                                                                                     self.scroll[1])})
                     if event.button == 3:
                         self.right_clicking = True
                     if self.shift:
                         if event.button == 4:
-                            self.tile_variant = (self.tile_variant - 1) % len(self.assets[self.tile_list[self.tile_group]])
+                            self.tile_variant = (self.tile_variant - 1) % len(
+                                self.assets[self.tile_list[self.tile_group]])
                         if event.button == 5:
-                            self.tile_variant = (self.tile_variant + 1) % len(self.assets[self.tile_list[self.tile_group]])
+                            self.tile_variant = (self.tile_variant + 1) % len(
+                                self.assets[self.tile_list[self.tile_group]])
                     else:
                         if event.button == 4:
                             self.tile_group = (self.tile_group - 1) % len(self.tile_list)
