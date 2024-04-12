@@ -160,10 +160,10 @@ class Player(PhysicsEntity):
                 point[1] = starting_point[1] + 26 * math.sin(direction_radians)
 
                 # Adding to new list, & Creating Particles
-                self.slash_points.append(point)
                 if tilemap.can_see_point(self.rect().center, point):
                     self.game.particles.append(
                         Particle(self.game, 'particle', point, velocity=(0, 0), frame=random.randint(0, 7)))
+                    self.slash_points.append(point)
 
             for i in range(-3, 3):
                 # Getting Point and new Direction (Degrees & Radians)
@@ -224,13 +224,11 @@ class Player(PhysicsEntity):
                 point[1] = stab_position[1] + stab_distance * math.sin(direction_radians)
 
                 # Adding to new list, & Creating Particles
-                self.stab_points.append(point)
-                if not tilemap.solid_check(point):
+                if tilemap.can_see_point(self.rect().center, point):
                     self.game.particles.append(
                         Particle(self.game, 'particle', point, velocity=(0, 0),
                                  frame=random.randint(0, 7), change_length=13))
-
-                self.stab_points.append(point)
+                    self.stab_points.append(point)
 
     def render(self, surf, offset=(0, 0)):
         if abs(self.dashing) <= 50:

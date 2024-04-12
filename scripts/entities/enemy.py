@@ -9,8 +9,11 @@ from scripts.effects.spark import Spark
 
 
 class Enemy(PhysicsEntity):
-    def __init__(self, game, pos, size):
-        super().__init__(game, 'enemy', pos, size)
+    def __init__(self, game, color, pos, size):
+        super().__init__(game, 'enemy/' + color, pos, size)
+
+        # Binding color
+        self.color = color
 
         # Getting AI Info
         self.see_player = False

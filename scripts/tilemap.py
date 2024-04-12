@@ -118,17 +118,21 @@ class Tilemap:
                                 self.tile_size))
         return rects
 
-    def render(self, surf, offset=(0, 0), optimize_offgrid=True):
+    def render(self, surf, offset=(0, 0), optimize_offgrid=True, spawners=False):
         # Background Tiles
         for tile in self.offgrid_tiles:
-            if optimize_offgrid:
-                if ((self.game.player.pos[0] - tile['pos'][0]) ** 2 +
-                        (self.game.player.pos[1] - tile['pos'][1]) ** 2) ** 0.5 <= 320:
+            if tile['type'] == 'spawner' and not spawners:
+                self.offgrid_tiles.remove(tile)
+                print("Removed spawner")
+            else:
+                if optimize_offgrid:
+                    if ((self.game.player.pos[0] - tile['pos'][0]) ** 2 +
+                            (self.game.player.pos[1] - tile['pos'][1]) ** 2) ** 0.5 <= 320:
+                        surf.blit(self.game.assets[tile['type']][tile['variant']],
+                                  (tile['pos'][0] - offset[0], tile['pos'][1] - offset[1]))
+                else:
                     surf.blit(self.game.assets[tile['type']][tile['variant']],
                               (tile['pos'][0] - offset[0], tile['pos'][1] - offset[1]))
-            else:
-                surf.blit(self.game.assets[tile['type']][tile['variant']],
-                          (tile['pos'][0] - offset[0], tile['pos'][1] - offset[1]))
 
         # Collision tiles (not off-screen)
         for x in range(offset[0] // self.tile_size, (offset[0] + surf.get_width()) // self.tile_size + 1):

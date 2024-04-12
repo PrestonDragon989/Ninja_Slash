@@ -39,10 +39,20 @@ class Game:
             'player/wall_slide': Animation(load_spritesheet('entities/player/wall_slide.png', (13, 17), (18, 18), 1)),
             'particle/leaf': Animation(load_images('particles/leaf'), img_dur=20, loop=False),  # Particles
             'particle/particle': Animation(load_images('particles/particle'), img_dur=6, loop=False),
-            'enemy/idle': Animation(load_images('entities/enemy/idle'), img_dur=6),
-            'enemy/run': Animation(load_images('entities/enemy/run'), img_dur=4),
             'enemy/bow': load_spritesheet('entities/enemies/bow.png', (6, 10), (10, 10), 1),
             'enemy/arrow': [pygame.transform.scale(load_spritesheet('entities/enemies/bow.png', (7, 1), (7, 7), 1)[0], [19, 2])],
+            'enemy/red/idle': Animation(load_spritesheet('entities/enemies/red/idle.png', (13, 17), (18, 18), 16), img_dur=6),
+            'enemy/red/run': Animation(load_spritesheet('entities/enemies/red/run.png', (13, 17), (18, 18), 7), img_dur=4),
+            'enemy/orange/idle': Animation(load_spritesheet('entities/enemies/orange/idle.png', (13, 17), (18, 18), 16), img_dur=6),
+            'enemy/orange/run': Animation(load_spritesheet('entities/enemies/orange/run.png', (13, 17), (18, 18), 7), img_dur=4),
+            'enemy/yellow/idle': Animation(load_spritesheet('entities/enemies/yellow/idle.png', (13, 17), (18, 18), 16), img_dur=6),
+            'enemy/yellow/run': Animation(load_spritesheet('entities/enemies/yellow/run.png', (13, 17), (18, 18), 7), img_dur=4),
+            'enemy/green/idle': Animation(load_spritesheet('entities/enemies/green/idle.png', (13, 17), (18, 18), 16), img_dur=6),
+            'enemy/green/run': Animation(load_spritesheet('entities/enemies/green/run.png', (13, 17), (18, 18), 7), img_dur=4),
+            'enemy/blue/idle': Animation(load_spritesheet('entities/enemies/blue/idle.png', (13, 17), (18, 18), 16), img_dur=6),
+            'enemy/blue/run': Animation(load_spritesheet('entities/enemies/blue/run.png', (13, 17), (18, 18), 7), img_dur=4),
+            'enemy/purple/idle': Animation(load_spritesheet('entities/enemies/purple/idle.png', (13, 17), (18, 18), 16), img_dur=6),
+            'enemy/purple/run': Animation(load_spritesheet('entities/enemies/purple/run.png', (13, 17), (18, 18), 7), img_dur=4),
         }
 
         # Getting sound effects and setting volume
@@ -60,7 +70,7 @@ class Game:
         self.sfx['hit'].set_volume(0.8)
         self.sfx['dash'].set_volume(0.3)
         self.sfx['jump'].set_volume(0.7)
-        self.sfx['slash'].set_volume(0.5)
+        self.sfx['slash'].set_volume(0.4)
         self.sfx['stab'].set_volume(0.5)
 
         # Setting up player data
@@ -93,7 +103,7 @@ class Game:
 
         self.leaf_spawners = []
 
-        self.load_level('map')
+        self.load_level('1')
 
     def load_level(self, map_id):
         self.tilemap.load('data/maps/' + str(map_id) + '.json')
@@ -109,12 +119,15 @@ class Game:
         # Spawning Enemies
         self.enemies.clear()
         self.projectiles.clear()
-        for spawner in self.tilemap.extract([('spawners', 0), ('spawners', 1)]):
+        colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple']
+        for spawner in self.tilemap.extract([('spawners', 0), ('spawners', 1), ('spawners', 2), ('spawners', 3), ('spawners', 4), ('spawners', 5), ('spawners', 6), ('spawners', 7)]):
             if spawner['variant'] == 0:
                 self.player.pos = spawner['pos']
                 self.player.air_time = 0
             else:
-                self.enemies.append(Enemy(self, spawner['pos'], (8, 15)))
+                color = random.choice(colors) if spawner['variant'] == 1 else colors[spawner['variant'] - 2]
+                print(color)
+                self.enemies.append(Enemy(self, color, spawner['pos'], (8, 15)))
                 self.enemies[-1].flip = random.randint(0, 1) == 1
 
         self.particles = []
@@ -125,7 +138,7 @@ class Game:
 
     def run(self):
         pygame.mixer.music.load('data/music.wav')
-        pygame.mixer.music.set_volume(0.6)
+        pygame.mixer.music.set_volume(0.7)
         pygame.mixer.music.play(-1)
 
         self.sfx['ambience'].play(-1)
@@ -146,7 +159,7 @@ class Game:
             self.clouds.render(self.display, render_scroll)
 
             # Updating and Rendering Tile map
-            self.tilemap.render(self.display, offset=render_scroll, optimize_offgrid=True)
+            self.tilemap.render(self.display, offset=render_scroll, optimize_offgrid=True, spawners=False)
 
             for projectile in self.projectiles.copy():
                 projectile[0][0] += projectile[1]
