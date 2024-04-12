@@ -2,6 +2,9 @@ import sys
 
 import pygame
 
+import tkinter as tk
+from tkinter import filedialog
+
 from scripts.utils import load_images, Animation
 from scripts.tilemap import Tilemap
 
@@ -10,6 +13,9 @@ RENDER_SCALE = 4.0  # USED TO BE 2.0
 
 class Editor:
     def __init__(self):
+        self.file = filedialog.asksaveasfilename(initialdir='data/maps')
+        print(f"Opened file: {self.file}")
+
         pygame.init()
 
         pygame.display.set_caption("editor")
@@ -29,11 +35,6 @@ class Editor:
 
         self.tilemap = Tilemap(self, tile_size=16)
 
-        try:
-            self.tilemap.load('map.json')
-        except FileNotFoundError:
-            pass
-
         self.scroll = [0, 0]
 
         self.tile_list = list(self.assets)
@@ -44,6 +45,11 @@ class Editor:
         self.right_clicking = False
         self.shift = False
         self.ongrid = True
+
+        try:
+            self.tilemap.load(self.file)
+        except Exception as e:
+            print(f"File load filed: {e}")
 
     def run(self):
         while True:
@@ -125,7 +131,7 @@ class Editor:
                         self.ongrid = not self.ongrid
                     if event.key == pygame.K_o:
                         self.tilemap.background = int(input("Enter background number: "))
-                        self.tilemap.save('map.json')
+                        self.tilemap.save(self.file)
                         print("Map saved!")
                     if event.key == pygame.K_t:
                         self.tilemap.autotile()

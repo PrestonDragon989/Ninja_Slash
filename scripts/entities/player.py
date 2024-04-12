@@ -136,6 +136,7 @@ class Player(PhysicsEntity):
 
     def dash(self):
         if not self.dashing:
+            self.game.sfx['dash'].play()
             if self.flip:
                 self.dashing = -60
             else:
@@ -143,6 +144,7 @@ class Player(PhysicsEntity):
 
     def slash(self, tilemap, mouse_pos):
         if not self.last_slash:
+            self.game.sfx['slash'].play()
             direction_degrees = math.degrees(math.atan2(mouse_pos[1] - (self.pos[1] + 10), mouse_pos[0] - (self.pos[0] + 7))) % 360
 
             self.slash_points.clear()
@@ -204,6 +206,7 @@ class Player(PhysicsEntity):
 
     def stab(self, tilemap, mouse_pos):
         if not self.last_stab:
+            self.game.sfx['stab'].play()
             stab_direction = math.degrees(
                 math.atan2(mouse_pos[1] - (self.pos[1] + 10), mouse_pos[0] - (self.pos[0] + 7))) % 360
             self.slash_points.clear()

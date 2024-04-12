@@ -45,6 +45,24 @@ class Game:
             'enemy/arrow': [pygame.transform.scale(load_spritesheet('entities/enemies/bow.png', (7, 1), (7, 7), 1)[0], [19, 2])],
         }
 
+        # Getting sound effects and setting volume
+        self.sfx = {
+            'jump': pygame.mixer.Sound('data/sfx/jump.wav'),
+            'dash': pygame.mixer.Sound('data/sfx/dash.wav'),
+            'hit': pygame.mixer.Sound('data/sfx/hit.wav'),
+            'stab': pygame.mixer.Sound('data/sfx/stab.wav'),
+            'slash': pygame.mixer.Sound('data/sfx/slash.wav'),
+            'shoot': pygame.mixer.Sound('data/sfx/shoot.wav'),
+            'ambience': pygame.mixer.Sound('data/sfx/ambience.wav'),
+        }
+        self.sfx['ambience'].set_volume(0.2)
+        self.sfx['shoot'].set_volume(0.3)
+        self.sfx['hit'].set_volume(0.8)
+        self.sfx['dash'].set_volume(0.3)
+        self.sfx['jump'].set_volume(0.7)
+        self.sfx['slash'].set_volume(0.5)
+        self.sfx['stab'].set_volume(0.5)
+
         # Setting up player data
         self.player = Player(self, [20, 40], (8, 15))
         self.movement = [False, False]
@@ -106,6 +124,12 @@ class Game:
         self.dead = 0
 
     def run(self):
+        pygame.mixer.music.load('data/music.wav')
+        pygame.mixer.music.set_volume(0.6)
+        pygame.mixer.music.play(-1)
+
+        self.sfx['ambience'].play(-1)
+
         while True:
             self.display.blit(self.background, (0, 0))
 
@@ -138,6 +162,7 @@ class Game:
                 elif abs(self.player.dashing) < 50:
                     if self.player.rect().collidepoint(projectile[0]):
                         self.projectiles.remove(projectile)
+                        self.sfx['hit'].play()
                         self.dead += 1
                         self.screenshake = max(35, self.screenshake + 35)
                         for i in range(30):
@@ -194,7 +219,8 @@ class Game:
                     if event.key == pygame.K_d:
                         self.movement[1] = True
                     if event.key == pygame.K_w:
-                        self.player.jump()
+                        if self.player.jump():
+                            self.sfx['jump'].play()
                     if event.key == pygame.K_SPACE or event.key == pygame.K_LSHIFT:
                         self.player.dash()
                 if event.type == pygame.MOUSEBUTTONDOWN:

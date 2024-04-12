@@ -38,12 +38,12 @@ class Enemy(PhysicsEntity):
                 return False
         return True
 
-    def can_see_player(self, tilemap):
+    def can_see_player(self, tilemap, y_range=16):
         distance_from_player = [self.game.player.pos[0] - self.pos[0], self.game.player.pos[1] - self.pos[1]]
 
-        if self.flip and 0 > distance_from_player[0] > -128 and abs(distance_from_player[1]) <= 32:
+        if self.flip and 0 > distance_from_player[0] > -128 and abs(distance_from_player[1]) <= y_range:
             return self.can_see_point(self.game.player.pos, tilemap)
-        elif not self.flip and 0 < distance_from_player[0] < 128 and abs(distance_from_player[1]) <= 32:
+        elif not self.flip and 0 < distance_from_player[0] < 128 and abs(distance_from_player[1]) <= y_range:
             return self.can_see_point(self.game.player.pos, tilemap)
         return False
 
@@ -69,7 +69,7 @@ class Enemy(PhysicsEntity):
         else:
             self.set_action('idle')
 
-        if random.randint(1, 4500) == 1:
+        if random.randint(1, 14500) == 1:
             self.shoot()
 
         """  if abs(self.game.player.dashing) >= 50:
@@ -102,9 +102,10 @@ class Enemy(PhysicsEntity):
                     return True
 
     def die(self):
+        self.game.sfx['hit'].play()
         enemy_rect = self.rect()
         self.game.screenshake = max(17, self.game.screenshake + 1)
-        for i in range(30):
+        for i in range(25):
             angle = random.random() * math.pi * 2
             speed = random.random() * 5
             self.game.sparks.append(Spark(enemy_rect.center, angle, 2 + random.random()))
@@ -120,11 +121,13 @@ class Enemy(PhysicsEntity):
         if abs(dis[1]) < 16:
             if self.flip and dis[0] < 0:
                 self.game.projectiles.append([[self.rect().centerx - 7, self.rect().centery], -1.5, 0])
+                self.game.sfx['shoot'].play()
                 for i in range(4):
                     self.game.sparks.append(
                         Spark(self.game.projectiles[-1][0], random.random() - 0.5 + math.pi, 2 + random.random()))
             if not self.flip and dis[0] > 0:
                 self.game.projectiles.append([[self.rect().centerx + 7, self.rect().centery], 1.5, 0])
+                self.game.sfx['shoot'].play()
                 self.game.sparks.append(
                     Spark(self.game.projectiles[-1][0], random.random() - 0.5, 2 + random.random()))
 
