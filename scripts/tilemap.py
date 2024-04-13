@@ -71,8 +71,8 @@ class Tilemap:
 
     def save(self, path):
         f = open(path, 'w')
-        json.dump({'tilemap': self.tilemap, 'tile_size': self.tile_size, 'offgrid': self.offgrid_tiles,
-                   'background': self.background}, f)
+        json.dump({'background': self.background, 'tile_size': self.tile_size, 'offgrid': self.offgrid_tiles,
+                   'tilemap': self.tilemap}, f)
         f.close()
 
     def load(self, path):
