@@ -78,6 +78,8 @@ class Editor:
                 return file, True
         except TypeError:
             pass
+        except KeyError:
+            return file, True
         try:
             f = open(file, 'w')
             f.write('{\n\n}')
