@@ -102,7 +102,7 @@ class Game:
         self.tilemap = Tilemap(self, tile_size=16)
 
         # Getting Current Level
-        self.level = 12
+        self.level = 0
 
         # Current Background
         self.background = self.assets['backgrounds'][0]
