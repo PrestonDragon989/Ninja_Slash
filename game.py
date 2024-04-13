@@ -102,7 +102,7 @@ class Game:
         self.tilemap = Tilemap(self, tile_size=16)
 
         # Getting Current Level
-        self.level = 0
+        self.level = 12
 
         # Current Background
         self.background = self.assets['backgrounds'][0]
@@ -164,6 +164,9 @@ class Game:
         self.transition = -30
 
         self.scroll = [0, 0]
+        self.scroll[0] += (self.player.rect().centerx - self.display.get_width() / 2 - self.scroll[0])
+        self.scroll[1] += (self.player.rect().centery - self.display.get_height() / 2 - self.scroll[1])
+
         self.dead = 0
 
     def run(self):

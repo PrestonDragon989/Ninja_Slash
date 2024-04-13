@@ -82,9 +82,9 @@ class Editor:
             f = open(file, 'w')
             f.write('{\n\n}')
             f.close()
-            print("Creating File")
+            print(f"Creating {file}")
             return file, True
-        except Exception as e:
+        except TypeError as e:
             print(f"Failed create: {e}")
         return 'N/A', False
 
@@ -178,11 +178,14 @@ class Editor:
                         self.ongrid = not self.ongrid
                     if event.key == pygame.K_o:
                         self.tilemap.save(self.file)
-                        print("Map saved!")
+                        print(f"Saving {self.file}")
                     if event.key == pygame.K_t:
                         self.tilemap.autotile()
                     if event.key == pygame.K_LSHIFT:
                         self.shift = True
+                    if event.key == pygame.K_c:
+                        self.tilemap = Tilemap(self, tile_size=16)
+                        self.file, null = self.get_file()
 
                     if event.key == pygame.K_n:
                         self.tilemap.background = (self.tilemap.background - 1) % len(self.backgrounds)
@@ -207,3 +210,4 @@ class Editor:
 
 if __name__ == "__main__":
     Editor()
+    print(f"Closing {__file__}")
