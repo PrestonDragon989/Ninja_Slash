@@ -20,6 +20,7 @@ class Player(PhysicsEntity):
 
         self.last_slash = 0
         self.slash_points = []
+        self.slash_tri = pygame.Rect(0, 0, 1, 1)
 
         self.stab_position = self.pos
         self.last_stab = 0
@@ -148,6 +149,7 @@ class Player(PhysicsEntity):
             direction_degrees = math.degrees(math.atan2(mouse_pos[1] - (self.pos[1] + 10), mouse_pos[0] - (self.pos[0] + 7))) % 360
 
             self.slash_points.clear()
+            col_points = []
             starting_point = self.rect().center
             for i in range(-6, 6):
                 # Getting Point and new Direction (Degrees & Radians)
@@ -159,48 +161,51 @@ class Player(PhysicsEntity):
                 point[0] = starting_point[0] + 26 * math.cos(direction_radians)
                 point[1] = starting_point[1] + 26 * math.sin(direction_radians)
 
+                col_point = [0, 0]
+                col_point[0] = starting_point[0] + 28 * math.cos(direction_radians)
+                col_point[1] = starting_point[1] + 28 * math.sin(direction_radians)
+
                 # Adding to new list, & Creating Particles
                 if tilemap.can_see_point(self.rect().center, point):
                     self.game.particles.append(
                         Particle(self.game, 'particle', point, velocity=(0, 0), frame=random.randint(0, 7)))
-                    self.slash_points.append(point)
-
-            for i in range(-3, 3):
-                # Getting Point and new Direction (Degrees & Radians)
-                point = [0, 0]
-                new_direction = (direction_degrees + (i * 4.2)) % 360
-                direction_radians = math.radians(new_direction)
-
-                # Finding New points based on 26 away
-                point[0] = starting_point[0] + 12 * math.cos(direction_radians)
-                point[1] = starting_point[1] + 12 * math.sin(direction_radians)
-
-                # Adding to new list, & Creating Particles
-                self.slash_points.append(point)
+                    self.slash_points.append(col_point)
             for i in range(-4, 4):
                 # Getting Point and new Direction (Degrees & Radians)
                 point = [0, 0]
-                new_direction = (direction_degrees + (i * 4.2)) % 360
+                new_direction = (direction_degrees + (i * 5.4)) % 360
                 direction_radians = math.radians(new_direction)
 
-                # Finding New points based on 26 away
-                point[0] = starting_point[0] + 17 * math.cos(direction_radians)
-                point[1] = starting_point[1] + 17 * math.sin(direction_radians)
+                point[0] = starting_point[0] + 23 * math.cos(direction_radians)
+                point[1] = starting_point[1] + 23 * math.sin(direction_radians)
 
                 # Adding to new list, & Creating Particles
-                self.slash_points.append(point)
-            for i in range(-2, 2):
+                if tilemap.can_see_point(self.rect().center, point):
+                    self.slash_points.append(point)
+            for i in range(-3, 3):
                 # Getting Point and new Direction (Degrees & Radians)
                 point = [0, 0]
-                new_direction = (direction_degrees + (i * 4.2)) % 360
+                new_direction = (direction_degrees + (i * 5.4)) % 360
                 direction_radians = math.radians(new_direction)
 
-                # Finding New points based on 26 away
-                point[0] = starting_point[0] + 3 * math.cos(direction_radians)
-                point[1] = starting_point[1] + 3 * math.sin(direction_radians)
+                point[0] = starting_point[0] + (11 + (4 * (i % 2))) * math.cos(direction_radians)
+                point[1] = starting_point[1] + (11 + (4 * (i % 2))) * math.sin(direction_radians)
 
                 # Adding to new list, & Creating Particles
-                self.slash_points.append(point)
+                if tilemap.can_see_point(self.rect().center, point):
+                    self.slash_points.append(point)
+            for i in range(-1, 1):
+                # Getting Point and new Direction (Degrees & Radians)
+                point = [0, 0]
+                new_direction = (direction_degrees + (i * 5.4)) % 360
+                direction_radians = math.radians(new_direction)
+
+                point[0] = starting_point[0] + (2 + (5 * (i % 2))) * math.cos(direction_radians)
+                point[1] = starting_point[1] + (2 + (5 * (i % 2))) * math.sin(direction_radians)
+
+                # Adding to new list, & Creating Particles
+                if tilemap.can_see_point(self.rect().center, point):
+                    self.slash_points.append(point)
 
             self.last_slash += 14
 

@@ -13,10 +13,13 @@ RENDER_SCALE = 4.0  # USED TO BE 2.0
 
 class Editor:
     def __init__(self):
-        self.file = filedialog.asksaveasfilename(initialdir='data/maps',
-                                                 title="Select JSON Map", confirmoverwrite=False)
+        self.tilemap = Tilemap(self, tile_size=16)
+
+        self.file, contin = self.get_file()
         print(f"Opened file: {self.file}")
 
+        if not contin:
+            return
         pygame.init()
 
         pygame.display.set_caption("editor")
@@ -49,8 +52,6 @@ class Editor:
 
         self.movement = [False, False, False, False]
 
-        self.tilemap = Tilemap(self, tile_size=16)
-
         self.backgrounds = load_images('backgrounds')
 
         self.scroll = [0, 0]
@@ -65,21 +66,29 @@ class Editor:
         self.shift = False
         self.ongrid = True
 
-    def run(self):
+        self.run()
+
+    def get_file(self):
+        file = filedialog.asksaveasfilename(initialdir='data/maps',
+                                            title="Select JSON Map", confirmoverwrite=False)
+        print(f"Opening {file}")
         try:
-            if not os.path.exists(self.file):
-                with open(self.file, 'w') as file:
-                    file.write("{\n\n}")
-                    print("new file")
-                    file.close()
+            if os.path.exists(file):
+                self.tilemap.load(file)
+                return file, True
         except TypeError:
             pass
-
         try:
-            self.tilemap.load(self.file)
-        except FileNotFoundError or TypeError:
-            pass
+            f = open(file, 'w')
+            f.write('{\n\n}')
+            f.close()
+            print("Creating File")
+            return file, True
+        except Exception as e:
+            print(f"Failed create: {e}")
+        return 'N/A', False
 
+    def run(self):
         while True:
             self.display.blit(self.backgrounds[self.tilemap.background], (0, 0))
 
@@ -197,4 +206,4 @@ class Editor:
 
 
 if __name__ == "__main__":
-    Editor().run()
+    Editor()
