@@ -107,7 +107,7 @@ class Enemy(PhysicsEntity):
     def die(self):
         self.game.sfx['hit'].play()
         enemy_rect = self.rect()
-        self.game.screenshake = max(17, self.game.screenshake + 1)
+        self.game.screenshake = max(13, self.game.screenshake + 1)
         for i in range(25):
             angle = random.random() * math.pi * 2
             speed = random.random() * 5

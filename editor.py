@@ -86,9 +86,8 @@ class Editor:
             f.close()
             print(f"Creating {file}")
             return file, True
-        except TypeError as e:
-            print(f"Failed create: {e}")
-        return 'N/A', False
+        except TypeError or FileNotFoundError:
+            return 'N/A', False
 
     def run(self):
         while True:
