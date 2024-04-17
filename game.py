@@ -299,6 +299,20 @@ class Game:
                             self.sfx['jump'].play()
                     if event.key == pygame.K_SPACE or event.key == pygame.K_LSHIFT:
                         self.player.dash()
+                    if event.key == pygame.K_RSHIFT:
+                        if self.player.flip:
+                            self.player.slash(self.tilemap, (self.player.rect().center[0] - 15,
+                                                             self.player.rect().center[1] + 3))
+                        else:
+                            self.player.slash(self.tilemap, (self.player.rect().center[0] + 15,
+                                                             self.player.rect().center[1] + 3))
+                    if event.key == pygame.K_SLASH:
+                        if self.player.flip:
+                            self.player.stab(self.tilemap, (self.player.rect().center[0] - 15,
+                                                            self.player.rect().center[1] + 3))
+                        else:
+                            self.player.stab(self.tilemap, (self.player.rect().center[0] + 15,
+                                                            self.player.rect().center[1] + 3))
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         mouse_to_player = ((pygame.mouse.get_pos()[0] / self.screen_scale) + self.scroll[0],
